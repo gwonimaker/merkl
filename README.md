@@ -1,12 +1,13 @@
-# Merkl Telegram Alerts
+# Crypto Telegram Alerts
 
-Merkl의 새 Opportunities를 확인해서 Telegram으로 알려주는 GitHub Actions 모니터입니다.
+Merkl의 새 Opportunities와 주요 거래소의 Earn/Launchpool/Launchpad류 이벤트를 Telegram으로 알려주는 GitHub Actions 모니터입니다.
 
 ## 동작 방식
 
-- GitHub Actions가 약 15분마다 Merkl API를 확인합니다.
-- 처음 실행할 때는 현재 Opportunity 목록을 `merkl_seen_opportunities.json`에 저장만 합니다.
-- 이후 실행부터 새로 발견된 Opportunity만 Telegram으로 보냅니다.
+- `Merkl Telegram Alerts`: GitHub Actions가 약 15분마다 Merkl API를 확인합니다.
+- `Exchange Earn Event Alerts`: Binance, Bybit, Bitget, Gate의 공지/이벤트 페이지를 약 15분마다 확인합니다.
+- 처음 실행할 때는 현재 목록을 상태 파일에 저장만 합니다.
+- 이후 실행부터 새로 발견된 항목만 Telegram으로 보냅니다.
 - PC를 켜둘 필요가 없습니다.
 
 ## 필요한 GitHub Secrets
@@ -34,19 +35,26 @@ https://api.telegram.org/botYOUR_TOKEN/getUpdates
 
 ## 수동 실행
 
-Actions 탭 -> `Merkl Telegram Alerts` -> `Run workflow`를 누르면 즉시 실행할 수 있습니다.
+Actions 탭에서 원하는 workflow를 선택한 뒤 `Run workflow`를 누르면 즉시 실행할 수 있습니다.
 
 - `send_initial=false`: 현재 목록을 기준점으로만 저장합니다.
 - `send_initial=true`: 현재 목록도 Telegram으로 보냅니다.
 
 ## 설정
 
-기본값은 `.github/workflows/merkl.yml`에 있습니다.
+Merkl 기본값은 `.github/workflows/merkl.yml`에 있습니다.
 
 - 실행 주기: 매시간 7, 22, 37, 52분
 - API URL: `https://api.merkl.xyz/v4/opportunities`
 - 상태 필터: `LIVE`
 
+거래소 이벤트 기본값은 `.github/workflows/exchanges.yml`과 `exchange_monitor.py`에 있습니다.
+
+- 실행 주기: 매시간 11, 26, 41, 56분
+- 대상: Binance, Bybit, Bitget, Gate
+- 키워드: Earn, Launchpool, Launchpad, LaunchX, PoolX, Startup, HODLer, Airdrop, Staking, Subscribe, Deposit to Earn 등
+- 상태 파일: `exchange_seen_events.json`
+
 ## 참고
 
-이 repo가 public이어도 GitHub Secrets 값은 공개되지 않습니다. 다만 알림 상태 파일 `merkl_seen_opportunities.json`은 repo에 커밋됩니다.
+이 repo가 public이어도 GitHub Secrets 값은 공개되지 않습니다. 다만 알림 상태 파일 `merkl_seen_opportunities.json`과 `exchange_seen_events.json`은 repo에 커밋됩니다.
