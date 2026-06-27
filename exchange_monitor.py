@@ -284,6 +284,7 @@ def send_telegram(text: str) -> None:
         {
             "chat_id": chat_id,
             "text": text[:4096],
+            "parse_mode": "HTML",
             "disable_web_page_preview": "false",
         }
     ).encode("utf-8")
@@ -297,16 +298,19 @@ def send_telegram(text: str) -> None:
 
 
 def message_for(event: Event) -> str:
+    title = html.escape(event.title)
+    url = html.escape(event.url, quote=True)
     lines = [
-        "New Exchange Earn Event",
-        f"Exchange: {event.source}",
-        event.title,
+        "🟡 <b>거래소 예치 이벤트 발견</b>",
+        f"🏦 거래소: <b>{html.escape(event.source)}</b>",
+        "",
+        f"📌 <b>{title}</b>",
     ]
     if event.category:
-        lines.append(f"Category: {event.category}")
+        lines.append(f"🧭 분류: {html.escape(event.category)}")
     if event.published_at:
-        lines.append(f"Published: {event.published_at}")
-    lines.append(event.url)
+        lines.append(f"🕒 게시: {html.escape(event.published_at)}")
+    lines.extend(["", f"🔗 <a href=\"{url}\">공지 바로가기</a>"])
     return "\n".join(lines)
 
 

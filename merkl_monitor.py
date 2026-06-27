@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import html
 import json
 import os
 import sys
@@ -141,26 +142,30 @@ def opportunity_url(item: dict[str, Any]) -> str:
 
 
 def message_for(item: dict[str, Any]) -> str:
+    name = html.escape(str(item.get("name") or "이름 없는 Opportunity"))
+    url = html.escape(opportunity_url(item), quote=True)
     lines = [
-        "New Merkl Opportunity",
-        str(item.get("name") or "Unnamed opportunity"),
-        f"Type: {item.get('type', 'n/a')}",
-        f"Chain ID: {item.get('chainId', 'n/a')}",
-        f"APR: {amount(item.get('apr'), '%')}",
-        f"Total APR: {amount(item.get('totalApr'), '%')}",
-        f"Daily rewards: {amount(item.get('dailyRewards'))}",
-        f"TVL: {amount(item.get('tvl'))}",
+        "🟢 <b>Merkl 새 Opportunity 발견</b>",
+        f"📌 <b>{name}</b>",
+        "",
+        f"🏷️ 유형: <code>{html.escape(str(item.get('type', 'n/a')))}</code>",
+        f"⛓️ 체인 ID: <code>{html.escape(str(item.get('chainId', 'n/a')))}</code>",
+        f"📈 APR: <b>{html.escape(amount(item.get('apr'), '%'))}</b>",
+        f"📊 총 APR: <b>{html.escape(amount(item.get('totalApr'), '%'))}</b>",
+        f"🎁 일일 보상: <b>{html.escape(amount(item.get('dailyRewards')))}</b>",
+        f"💰 TVL: <b>{html.escape(amount(item.get('tvl')))}</b>",
     ]
 
     end = campaign_end(item)
     if end:
-        lines.append(f"Ends: {end}")
+        lines.append(f"⏰ 종료: {html.escape(end)}")
 
     tags = item.get("tags")
     if isinstance(tags, list) and tags:
-        lines.append("Tags: " + ", ".join(str(tag) for tag in tags[:5]))
+        tag_text = ", ".join(str(tag) for tag in tags[:5])
+        lines.append(f"🔖 태그: {html.escape(tag_text)}")
 
-    lines.append(opportunity_url(item))
+    lines.extend(["", f"🔗 <a href=\"{url}\">Merkl에서 보기</a>"])
     return "\n".join(lines)
 
 
@@ -175,6 +180,7 @@ def send_telegram(text: str) -> None:
         {
             "chat_id": chat_id,
             "text": text[:4096],
+            "parse_mode": "HTML",
             "disable_web_page_preview": "false",
         }
     ).encode("utf-8")
