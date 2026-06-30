@@ -83,6 +83,7 @@
     "binance:https://www.binance.com/en/support/announcement/fff035997a684c67a72f661f4ffb82d0",
     "bitget:https://www.bitget.com/support/articles/12560603887483",
     "bitget:https://www.bitget.com/support/articles/12560603887589",
+    "bitget:https://www.bitget.com/support/articles/12560603887608",
     "bitget:https://www.bitget.com/support/articles/12560603887617",
     "gate:https://www.gate.com/announcements/article/100230",
     "gate:https://www.gate.com/announcements/article/100359",
@@ -98,6 +99,8 @@
     "gate:https://www.gate.com/announcements/article/100406",
     "gate:https://www.gate.com/announcements/article/100409",
     "gate:https://www.gate.com/announcements/article/100411",
+    "gate:https://www.gate.com/announcements/article/100416",
+    "gate:https://www.gate.com/announcements/article/100417",
     "gate:https://www.gate.com/announcements/article/50791",
     "gate:https://www.gate.com/announcements/article/50804",
     "gate:https://www.gate.com/announcements/article/50876",
@@ -111,5 +114,5 @@
     "gate:https://www.gate.com/announcements/article/51558",
     "gate:https://www.gate.com/announcements/article/51611"
   ],
-  "updatedAt": "2026-06-30T09:57:31.492590+00:00"
+  "updatedAt": "2026-06-30T12:21:26.454581+00:00"
 }
