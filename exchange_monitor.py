@@ -218,39 +218,6 @@ def fetch_bitget() -> list[Event]:
     return list(events.values())
 
 
-def gate_reader_url(url: str) -> str:
-    return "https://r.jina.ai/http://r.jina.ai/http://" + url
-
-
-def parse_gate_markdown(source_url: str, category: str) -> list[Event]:
-    body = request_text(gate_reader_url(source_url), accept="text/plain")
-    events: dict[str, Event] = {}
-
-    pattern = re.compile(r"\[([^\]]{5,260})\]\((https://www\.gate\.com/announcements/article/[^\)]+)\)")
-    for match in pattern.finditer(body):
-        title = clean_title(match.group(1))
-        if not title or not matches_keywords(title):
-            continue
-
-        event = Event(source="Gate", title=title, url=match.group(2), category=category)
-        events[event.key] = event
-
-    return list(events.values())
-
-
-def fetch_gate() -> list[Event]:
-    sources = [
-        ("Latest", "https://www.gate.com/announcements"),
-        ("Simple Earn", "https://www.gate.com/announcements/simpleearn"),
-        ("Airdrops", "https://www.gate.com/announcements/airdrops"),
-    ]
-    events: dict[str, Event] = {}
-    for category, url in sources:
-        for event in parse_gate_markdown(url, category):
-            events[event.key] = event
-    return list(events.values())
-
-
 def load_state() -> dict[str, Any]:
     if not STATE_FILE.exists():
         return {"seen": []}
@@ -319,7 +286,6 @@ def collect_events() -> list[Event]:
         ("Binance", fetch_binance),
         ("Bybit", fetch_bybit),
         ("Bitget", fetch_bitget),
-        ("Gate", fetch_gate),
     ]
     events: dict[str, Event] = {}
     failures: list[str] = []
