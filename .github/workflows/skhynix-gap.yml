@@ -1,0 +1,44 @@
+name: SK Hynix Gap Funding Alert
+
+on:
+  schedule:
+    - cron: "3 * * * *"
+  workflow_dispatch:
+    inputs:
+      krx_symbol:
+        description: Yahoo Finance KRX symbol
+        required: false
+        default: "000660.KS"
+        type: string
+      fx_symbol:
+        description: Yahoo Finance FX symbol
+        required: false
+        default: "KRW=X"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skhynix-gap-funding-alert
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Send SK Hynix gap/funding alert
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          KRX_SYMBOL: ${{ github.event.inputs.krx_symbol || '000660.KS' }}
+          FX_SYMBOL: ${{ github.event.inputs.fx_symbol || 'KRW=X' }}
+        run: python skhynix_gap_monitor.py
