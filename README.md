@@ -58,7 +58,7 @@ Merkl 기본값은 `.github/workflows/merkl.yml`에 있습니다.
 
 SK하이닉스 갭/펀딩 알림 기본값은 `.github/workflows/skhynix-gap.yml`과 `skhynix_gap_monitor.py`에 있습니다.
 
-- 실행 주기: 매시간 3분
+- 실행 주기: 매시간 3분, 33분
 - KRX 심볼: `000660.KS`
 - 환율 심볼: `KRW=X`
 - Hyperliquid DEX/마켓: `xyz`, `xyz:SKHX`

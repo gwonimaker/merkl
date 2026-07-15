@@ -21,10 +21,6 @@ def fmt_usd(value: float) -> str:
     return f"${value:,.2f}"
 
 
-def fmt_krw(value: float) -> str:
-    return f"₩{value:,.0f}"
-
-
 def fmt_fx(value: float) -> str:
     return f"{value:,.2f}"
 
@@ -123,13 +119,10 @@ def build_message() -> str:
 
     ctx = hl["ctx"]
     hl_price = float(ctx.get("markPx") or ctx.get("midPx") or ctx.get("oraclePx"))
-    hl_mid = float(ctx["midPx"]) if ctx.get("midPx") else None
-    hl_oracle = float(ctx["oraclePx"]) if ctx.get("oraclePx") else None
     funding_hourly_pct = float(ctx.get("funding") or 0) * 100
 
     spot_usd = krx["price"] / fx["price"]
-    diff_usd = hl_price - spot_usd
-    gap_pct = (diff_usd / spot_usd) * 100
+    gap_pct = ((hl_price - spot_usd) / spot_usd) * 100
     spot_age_min = round((datetime.now().timestamp() * 1000 - krx["time_ms"]) / 60000)
 
     now_kst = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S")
@@ -137,18 +130,11 @@ def build_message() -> str:
 
     rows = [
         f"USD/KRW   {fmt_fx(fx['price'])}",
-        f"KRX 현물   {fmt_krw(krx['price'])}",
         f"현물 USD   {fmt_usd(spot_usd)}",
         f"HL 가격    {fmt_usd(hl_price)}",
         f"갭         {fmt_pct(gap_pct)} ({direction})",
-        f"차이       {fmt_usd(diff_usd)}",
         f"펀딩       {fmt_funding(funding_hourly_pct)} / h",
-        f"24h 환산   {fmt_funding(funding_hourly_pct * 24)}",
     ]
-    if hl_mid is not None:
-        rows.append(f"HL Mid    {fmt_usd(hl_mid)}")
-    if hl_oracle is not None:
-        rows.append(f"HL Oracle {fmt_usd(hl_oracle)}")
 
     stale_note = ""
     if spot_age_min > 90:
