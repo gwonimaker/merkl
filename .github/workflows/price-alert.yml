@@ -2,7 +2,7 @@ name: Price Alert
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "13,33,53 * * * *"
   workflow_dispatch:
 
 jobs:
