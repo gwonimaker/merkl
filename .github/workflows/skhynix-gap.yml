@@ -1,8 +1,6 @@
 name: SK Hynix Gap Funding Alert
 
 on:
-  schedule:
-    - cron: "3,33 * * * *"
   workflow_dispatch:
     inputs:
       krx_symbol:
