@@ -2,13 +2,20 @@ name: Price Alert
 
 on:
   schedule:
-    - cron: "13,33,53 * * * *"
+    - cron: "8,28,48 * * * *"
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: price-alert
+  cancel-in-progress: true
 
 jobs:
   send-alert:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
 
     steps:
       - name: Check out repository
@@ -26,4 +33,6 @@ jobs:
           FX_SYMBOL: "KRW=X"
           WTI_SYMBOL: "CL=F"
           US10Y_SYMBOL: "^TNX"
+          TARGET_MINUTES: "13,33,53"
+          MAX_WAIT_MINUTES: "7"
         run: node scripts/price-alert.mjs
