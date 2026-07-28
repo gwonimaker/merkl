@@ -6,6 +6,12 @@ const HYPERLIQUID_COIN = "xyz:SKHX";
 const FX_SYMBOL = process.env.FX_SYMBOL || "KRW=X";
 const WTI_SYMBOL = process.env.WTI_SYMBOL || "CL=F";
 const US10Y_SYMBOL = process.env.US10Y_SYMBOL || "^TNX";
+const TARGET_MINUTES = (process.env.TARGET_MINUTES || "13,33,53")
+  .split(",")
+  .map((value) => Number(value.trim()))
+  .filter((value) => Number.isInteger(value) && value >= 0 && value <= 59);
+const MAX_WAIT_MS = Number(process.env.MAX_WAIT_MINUTES || "7") * 60 * 1000;
+const SEND_GRACE_MS = Number(process.env.SEND_GRACE_MINUTES || "2") * 60 * 1000;
 
 if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
   throw new Error("TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are required.");
@@ -30,6 +36,60 @@ const escapeHtml = (s) =>
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function targetDelaysMs(now = new Date()) {
+  const nextDelays = [];
+  const previousDelays = [];
+
+  for (const minute of TARGET_MINUTES) {
+    const next = new Date(now);
+    next.setUTCSeconds(0, 0);
+    next.setUTCMinutes(minute);
+
+    while (next.getTime() < now.getTime()) {
+      next.setUTCHours(next.getUTCHours() + 1);
+    }
+
+    const previous = new Date(now);
+    previous.setUTCSeconds(0, 0);
+    previous.setUTCMinutes(minute);
+
+    while (previous.getTime() > now.getTime()) {
+      previous.setUTCHours(previous.getUTCHours() - 1);
+    }
+
+    nextDelays.push(next.getTime() - now.getTime());
+    previousDelays.push(now.getTime() - previous.getTime());
+  }
+
+  return {
+    next: Math.min(...nextDelays),
+    previous: Math.min(...previousDelays),
+  };
+}
+
+async function waitForTargetMinute() {
+  if (process.env.GITHUB_EVENT_NAME !== "schedule") return true;
+  if (TARGET_MINUTES.length === 0) return true;
+
+  const { next, previous } = targetDelaysMs();
+
+  if (previous <= SEND_GRACE_MS) {
+    console.log("Already inside the target minute grace window.");
+    return true;
+  }
+
+  if (next > 0 && next <= MAX_WAIT_MS) {
+    console.log(`Waiting ${Math.round(next / 1000)}s for the target minute.`);
+    await sleep(next);
+    return true;
+  }
+
+  console.log(`Skipping stale schedule run. Next target is ${Math.round(next / 1000)}s away.`);
+  return false;
+}
 
 async function sendTelegram(text) {
   const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -91,6 +151,12 @@ async function yahooPrice(symbol) {
 }
 
 try {
+  const shouldSend = await waitForTargetMinute();
+
+  if (!shouldSend) {
+    process.exit(0);
+  }
+
   const [hynixPrice, fx, wtiOil, us10yRaw] = await Promise.all([
     getHynixPrice(),
     yahooPrice(FX_SYMBOL),
@@ -100,7 +166,6 @@ try {
 
   // Yahoo ^TNX is commonly quoted as 10x the yield. Example: 42.50 means 4.25%.
   const us10yYield = us10yRaw > 20 ? us10yRaw / 10 : us10yRaw;
-
 
   const message =
 `<b>가격 알람</b>
