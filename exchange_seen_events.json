@@ -113,6 +113,7 @@
     "binance:https://www.binance.com/en/support/announcement/deb0ba55bb674b69a40204c911b0cdd4",
     "binance:https://www.binance.com/en/support/announcement/e983065edf554091b6b399f75c7297f6",
     "binance:https://www.binance.com/en/support/announcement/eaa19c63a4de4e8fa324d43ed45d7e87",
+    "binance:https://www.binance.com/en/support/announcement/eaa55145eaa4485c917e23b31b8958c0",
     "binance:https://www.binance.com/en/support/announcement/edfe4dfacbe842c4b2848d5e819b4d54",
     "binance:https://www.binance.com/en/support/announcement/eec786aca16c494e88d7f7471bcdc7a8",
     "binance:https://www.binance.com/en/support/announcement/f0b8996fcc834c5086922afe20125179",
@@ -156,6 +157,8 @@
     "bitget:https://www.bitget.com/support/articles/12560603891443",
     "bitget:https://www.bitget.com/support/articles/12560603891507",
     "bitget:https://www.bitget.com/support/articles/12560603891508",
+    "bitget:https://www.bitget.com/support/articles/12560603891626",
+    "bitget:https://www.bitget.com/support/articles/12560603891643",
     "gate:https://www.gate.com/announcements/article/100230",
     "gate:https://www.gate.com/announcements/article/100359",
     "gate:https://www.gate.com/announcements/article/100365",
@@ -243,5 +246,5 @@
     "gate:https://www.gate.com/announcements/article/51558",
     "gate:https://www.gate.com/announcements/article/51611"
   ],
-  "updatedAt": "2026-08-11T11:24:51.812649+00:00"
+  "updatedAt": "2026-08-11T12:03:46.462564+00:00"
 }
